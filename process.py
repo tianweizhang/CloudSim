@@ -9,6 +9,9 @@ import argparse
 vm_num = ""
 mode = ""
 
+"ant: compile the file"
+"javac -classpath jars/cloudsim-new.jar:examples examples/org/cloudbus/cloudsim/examples/CloudSimQoS.java: compile CloudSimQoS"
+
 def main(argv):
 	num_host = 100
 
