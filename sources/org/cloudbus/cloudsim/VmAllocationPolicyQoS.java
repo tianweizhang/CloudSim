@@ -78,11 +78,12 @@ public class VmAllocationPolicyQoS extends VmAllocationPolicy {
 				int idx = -1;
 
 				// we want the host with less pes in use
+
 				List<Host> hostList = getHostList();
 				int host_num = hostList.size();
 				for (int i = 0; i< host_num; i++) {
 					int residueQoS = hostList.get(i).getQoS() - requiredQoS*requiredPes;
-					if ((residueQoS >= 0) && (residueQoS < moreFree) && (freePesTmp.get(i) >= requiredPes)) {
+					if ((hostList.get(i).getQoS() > requiredQoS) && (freePesTmp.get(i) >= requiredPes) && (freePesTmp.get(i) < moreFree)) {
 						moreFree = residueQoS;
 						idx = i;
 					}

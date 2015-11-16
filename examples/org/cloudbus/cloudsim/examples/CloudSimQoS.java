@@ -61,17 +61,11 @@ public class CloudSimQoS {
 				pesNumber = 8;
 			}
 
-			if (ran2 < 0.1) {
-				qos = 1;
-			}
-			else if (ran2 < 0.2) {
-				qos = 2;
-			}
-			else if (ran2 < 0.3) {
-				qos = 3;
+			if (ran2 < 0.3) {
+				qos = 0;
 			}
 			else {
-				qos = 4;
+				qos = 1;
 			}
 			vm[i] = new Vm(idShift + i, userId, mips, pesNumber, qos, ram, bw, size, vmm, new CloudletSchedulerTimeShared());
 			list.add(vm[i]);
@@ -111,7 +105,7 @@ public class CloudSimQoS {
 		int ram = 16384; //host memory (MB)
 		long storage = 5000000; //host storage
 		int bw = 10000;
-		int qos = 32;
+		int qos = 3;
 
 		for (int i=0; i<hosts; i++) {
 			hostList.add(new Host(i, qos, new RamProvisionerSimple(ram), new BwProvisionerSimple(bw), storage, peList, new VmSchedulerTimeShared(peList))); 

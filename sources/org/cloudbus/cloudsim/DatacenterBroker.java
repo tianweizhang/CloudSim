@@ -112,7 +112,7 @@ public class DatacenterBroker extends SimEntity {
 	public void submitVmList(List<? extends Vm> list) {
 		Collections.sort(list, new Comparator<Vm>(){
 			public int compare(Vm v1, Vm v2){
-				return v2.getQoS()*v2.getNumberOfPes() - v1.getQoS()*v1.getNumberOfPes();
+				return v2.getNumberOfPes() - v1.getNumberOfPes();
 			}
 		});
 		getVmList().addAll(list);
@@ -232,8 +232,8 @@ public class DatacenterBroker extends SimEntity {
 			getVmsToDatacentersMap().put(vmId, datacenterId);
 			getVmsCreatedList().add(VmList.getById(getVmList(), vmId));
 			Vm vm = VmList.getById(getVmsCreatedList(), vmId);
-			try(PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter("/home/tianweiz/cloudsim-3.0.3/data.txt", true)))) {
-				out.println(CloudSim.clock() + " " + vmId + " " + vm.getHost().getId() +" "+ vm.getQoS()*vm.getNumberOfPes()+" " + vm.getNumberOfPes());
+			try(PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter("/Users/tianweiz/CloudSim/data.txt", true)))) {
+				out.println(CloudSim.clock() + " " + vmId + " " + vm.getHost().getId() +" "+ vm.getQoS()+" " + vm.getNumberOfPes());
 				out.close();
 			}
 			catch (IOException e) {

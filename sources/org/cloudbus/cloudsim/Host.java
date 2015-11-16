@@ -161,7 +161,7 @@ public class Host {
 			}
 
 			setStorage(getStorage() - vm.getSize());
-			setQoS(getQoS() - vm.getNumberOfPes()*vm.getQoS());
+			setQoS(getQoS() - vm.getQoS());
 			getVmsMigratingIn().add(vm);
 			getVmList().add(vm);
 			updateVmsProcessing(CloudSim.clock());
@@ -197,7 +197,7 @@ public class Host {
 			getBwProvisioner().allocateBwForVm(vm, vm.getCurrentRequestedBw());
 			getVmScheduler().allocatePesForVm(vm, vm.getCurrentRequestedMips());
 			setStorage(getStorage() - vm.getSize());
-			setQoS(getQoS() - vm.getNumberOfPes()*vm.getQoS());
+			setQoS(getQoS() - vm.getQoS());
 		}
 	}
 
@@ -251,7 +251,7 @@ public class Host {
 		}
 
 		setStorage(getStorage() - vm.getSize());
-		setQoS(getQoS() - vm.getNumberOfPes()*vm.getQoS());
+		setQoS(getQoS() - vm.getQoS());
 		getVmList().add(vm);
 		vm.setHost(this);
 		return true;
@@ -283,7 +283,7 @@ public class Host {
 		for (Vm vm : getVmList()) {
 			vm.setHost(null);
 			setStorage(getStorage() + vm.getSize());
-			setQoS(getQoS() + vm.getNumberOfPes()*vm.getQoS());
+			setQoS(getQoS() + vm.getQoS());
 		}
 		getVmList().clear();
 	}
@@ -298,7 +298,7 @@ public class Host {
 		getBwProvisioner().deallocateBwForVm(vm);
 		getVmScheduler().deallocatePesForVm(vm);
 		setStorage(getStorage() + vm.getSize());
-		setQoS(getQoS() + vm.getNumberOfPes()*vm.getQoS());
+		setQoS(getQoS() + vm.getQoS());
 	}
 
 	/**

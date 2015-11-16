@@ -29,6 +29,7 @@ def main(argv):
 
 		os.popen("rm -rf data.txt")
 
+		num_qos = 0
 		num_core = 0
 
 		for vm in vm_list:
@@ -37,16 +38,20 @@ def main(argv):
 			qos_value = int(vm_value[3])
 			active[host_id] = 1
 			qos[host_id] += qos_value
+			num_qos += qos_value
 			num_core += int(vm_value[4])
 
 		for i in range(num_host):
-			if qos[i] > 32:
-				qos[i] -= 32
+			if qos[i] > 3:
+				qos[i] -= 3
 			else:
 				qos[i] = 0
 
-		x += 1.0*len(vm_list)/sum(active)
-		y += 1.0*sum(qos)/num_core
+		x += 1.0*num_core/(sum(active)*16)
+		if num_qos == 0:
+			y += 0
+		else:
+			y += 1.0*sum(qos)/num_qos
 
 	print "{0} {1}".format(x/10, y/10)
 
