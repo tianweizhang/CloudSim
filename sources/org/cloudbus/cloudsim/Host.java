@@ -32,6 +32,8 @@ public class Host {
 	/** The storage. */
 	private long storage;
 
+	private int qos;
+
 	/** The ram provisioner. */
 	private RamProvisioner ramProvisioner;
 
@@ -74,6 +76,25 @@ public class Host {
 			List<? extends Pe> peList,
 			VmScheduler vmScheduler) {
 		setId(id);
+		setRamProvisioner(ramProvisioner);
+		setBwProvisioner(bwProvisioner);
+		setStorage(storage);
+		setVmScheduler(vmScheduler);
+
+		setPeList(peList);
+		setFailed(false);
+	}
+
+	public Host(
+			int id,
+			int qos,
+			RamProvisioner ramProvisioner,
+			BwProvisioner bwProvisioner,
+			long storage,
+			List<? extends Pe> peList,
+			VmScheduler vmScheduler) {
+		setId(id);
+		setQoS(qos);
 		setRamProvisioner(ramProvisioner);
 		setBwProvisioner(bwProvisioner);
 		setStorage(storage);
@@ -140,7 +161,7 @@ public class Host {
 			}
 
 			setStorage(getStorage() - vm.getSize());
-
+			setQoS(getQoS() - vm.getQoS());
 			getVmsMigratingIn().add(vm);
 			getVmList().add(vm);
 			updateVmsProcessing(CloudSim.clock());
@@ -176,6 +197,7 @@ public class Host {
 			getBwProvisioner().allocateBwForVm(vm, vm.getCurrentRequestedBw());
 			getVmScheduler().allocatePesForVm(vm, vm.getCurrentRequestedMips());
 			setStorage(getStorage() - vm.getSize());
+			setQoS(getQoS() - vm.getQoS());
 		}
 	}
 
@@ -229,6 +251,7 @@ public class Host {
 		}
 
 		setStorage(getStorage() - vm.getSize());
+		setQoS(getQoS() - vm.getQoS());
 		getVmList().add(vm);
 		vm.setHost(this);
 		return true;
@@ -260,6 +283,7 @@ public class Host {
 		for (Vm vm : getVmList()) {
 			vm.setHost(null);
 			setStorage(getStorage() + vm.getSize());
+			setQoS(getQoS() + vm.getQoS());
 		}
 		getVmList().clear();
 	}
@@ -274,6 +298,7 @@ public class Host {
 		getBwProvisioner().deallocateBwForVm(vm);
 		getVmScheduler().deallocatePesForVm(vm);
 		setStorage(getStorage() + vm.getSize());
+		setQoS(getQoS() + vm.getQoS());
 	}
 
 	/**
@@ -416,6 +441,9 @@ public class Host {
 		return getRamProvisioner().getRam();
 	}
 
+	public int getQoS() {
+		return qos;
+	}
 	/**
 	 * Gets the machine storage.
 	 * 
@@ -529,6 +557,10 @@ public class Host {
 	@SuppressWarnings("unchecked")
 	public <T extends Vm> List<T> getVmList() {
 		return (List<T>) vmList;
+	}
+
+	public void setQoS(int qos) {
+		this.qos = qos;
 	}
 
 	/**

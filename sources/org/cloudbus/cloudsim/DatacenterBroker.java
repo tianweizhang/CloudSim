@@ -13,6 +13,8 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.io.*;
+import java.util.*;
 
 import org.cloudbus.cloudsim.core.CloudSim;
 import org.cloudbus.cloudsim.core.CloudSimTags;
@@ -108,6 +110,11 @@ public class DatacenterBroker extends SimEntity {
 	 * @post $none
 	 */
 	public void submitVmList(List<? extends Vm> list) {
+		Collections.sort(list, new Comparator<Vm>(){
+			public int compare(Vm v1, Vm v2){
+				return v2.getNumberOfPes() - v1.getNumberOfPes();
+			}
+		});
 		getVmList().addAll(list);
 	}
 
@@ -224,6 +231,16 @@ public class DatacenterBroker extends SimEntity {
 		if (result == CloudSimTags.TRUE) {
 			getVmsToDatacentersMap().put(vmId, datacenterId);
 			getVmsCreatedList().add(VmList.getById(getVmList(), vmId));
+			Vm vm = VmList.getById(getVmsCreatedList(), vmId);
+			try(PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter("/Users/tianweiz/CloudSim/data.txt", true)))) {
+				out.println(CloudSim.clock() + " " + vmId + " " + vm.getHost().getId() +" "+ vm.getQoS()+" " + vm.getNumberOfPes());
+				out.close();
+			}
+			catch (IOException e) {
+				System.out.print("file not found");
+				e.printStackTrace();
+			}
+
 			Log.printLine(CloudSim.clock() + ": " + getName() + ": VM #" + vmId
 					+ " has been created in Datacenter #" + datacenterId + ", Host #"
 					+ VmList.getById(getVmsCreatedList(), vmId).getHost().getId());

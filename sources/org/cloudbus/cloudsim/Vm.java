@@ -46,6 +46,8 @@ public class Vm {
 	/** The bw. */
 	private long bw;
 
+	private int qos;
+
 	/** The vmm. */
 	private String vmm;
 
@@ -113,6 +115,38 @@ public class Vm {
 		setUid(getUid(userId, id));
 		setMips(mips);
 		setNumberOfPes(numberOfPes);
+		setRam(ram);
+		setBw(bw);
+		setSize(size);
+		setVmm(vmm);
+		setCloudletScheduler(cloudletScheduler);
+
+		setInMigration(false);
+		setBeingInstantiated(true);
+
+		setCurrentAllocatedBw(0);
+		setCurrentAllocatedMips(null);
+		setCurrentAllocatedRam(0);
+		setCurrentAllocatedSize(0);
+	}
+
+	public Vm(
+			int id,
+			int userId,
+			double mips,
+			int numberOfPes,
+			int qos,
+			int ram,
+			long bw,
+			long size,
+			String vmm,
+			CloudletScheduler cloudletScheduler) {
+		setId(id);
+		setUserId(userId);
+		setUid(getUid(userId, id));
+		setMips(mips);
+		setNumberOfPes(numberOfPes);
+		setQoS(qos);
 		setRam(ram);
 		setBw(bw);
 		setSize(size);
@@ -336,6 +370,13 @@ public class Vm {
 		this.numberOfPes = numberOfPes;
 	}
 
+	public int getQoS() {
+		return qos;
+	}
+
+	protected void setQoS(int qos) {
+		this.qos = qos;
+	}
 	/**
 	 * Gets the amount of ram.
 	 * 
