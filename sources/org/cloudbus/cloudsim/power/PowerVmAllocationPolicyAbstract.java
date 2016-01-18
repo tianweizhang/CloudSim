@@ -52,11 +52,40 @@ public abstract class PowerVmAllocationPolicyAbstract extends VmAllocationPolicy
 	 */
 	@Override
 	public boolean allocateHostForVm(Vm vm) {
-		return allocateHostForVm(vm, findHostForVm(vm));
+		boolean ret = allocateHostForVm(vm, findHostForVm(vm));
+
+
+		/* This profiles all the machines and VMs to get the attack VM coverage */
+		int numAttackVm = 0;
+		int numActiveHost = 0;
+		int numAffectedHost = 0;
+	        for (PowerHost host : this.<PowerHost> getHostList()) {
+			if (host.getVmList().size() == 0) {
+				continue;
+			}
+			else {
+				numActiveHost ++;
+				boolean isAffected = false;
+	       			for (Vm vm1 : host.getVmList()) {
+					if (vm1.getIsDeallocated() == false) {
+						numAttackVm ++;
+						if (isAffected == false) {
+							isAffected = true;
+							numAffectedHost ++;
+						}
+					}
+                		}
+			}
+                }
+		if (vm.getIsDeallocated() == false) {
+			System.out.println(" ");
+			System.out.println("Coverage ratio = " + numAffectedHost + "/" + numActiveHost + " using " + numAttackVm + " VMs");
+		}
+		return ret;
 	}
 
 	/*
-	 * (non-Javadoc)
+	 * (non-Javadoc)x
 	 * @see org.cloudbus.cloudsim.VmAllocationPolicy#allocateHostForVm(org.cloudbus.cloudsim.Vm,
 	 * org.cloudbus.cloudsim.Host)
 	 */

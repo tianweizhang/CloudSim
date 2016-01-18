@@ -4,6 +4,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.FileNotFoundException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -14,6 +15,7 @@ import java.util.Scanner;
 
 import org.cloudbus.cloudsim.Cloudlet;
 import org.cloudbus.cloudsim.CloudletSchedulerDynamicWorkload;
+import org.cloudbus.cloudsim.CloudletSchedulerTimeShared;
 import org.cloudbus.cloudsim.Datacenter;
 import org.cloudbus.cloudsim.DatacenterBroker;
 import org.cloudbus.cloudsim.DatacenterCharacteristics;
@@ -37,6 +39,11 @@ import org.cloudbus.cloudsim.provisioners.BwProvisionerSimple;
 import org.cloudbus.cloudsim.provisioners.PeProvisionerSimple;
 import org.cloudbus.cloudsim.provisioners.RamProvisionerSimple;
 import org.cloudbus.cloudsim.util.MathUtil;
+import org.cloudbus.cloudsim.UtilizationModel;
+import org.cloudbus.cloudsim.UtilizationModelNull;
+import org.cloudbus.cloudsim.UtilizationModelFull;
+import org.cloudbus.cloudsim.UtilizationModelPlanetLabInMemory;
+import org.cloudbus.cloudsim.examples.power.Constants;
 
 /**
  * The Class Helper.
@@ -76,10 +83,106 @@ public class Helper {
 					1,
 					"Xen",
 					new CloudletSchedulerDynamicWorkload(Constants.VM_MIPS[vmType], Constants.VM_PES[vmType]),
-					Constants.SCHEDULING_INTERVAL));
+					Constants.SCHEDULING_INTERVAL, true));
 		}
 		return vms;
 	}
+
+	public static List<Vm> createVmList1(int brokerId, int vmsNumber, int shiftId) {
+		List<Vm> vms = new ArrayList<Vm>();
+		int vmType = 0;
+		for (int i = 0; i < vmsNumber; i++) {
+			vms.add(new PowerVm(
+					i+shiftId,
+					brokerId,
+					Constants.VM_MIPS[vmType],
+					Constants.VM_PES[vmType],
+					Constants.VM_RAM[vmType],
+					Constants.VM_BW,
+					Constants.VM_SIZE,
+					1,
+					"Xen",
+					new CloudletSchedulerDynamicWorkload(Constants.VM_MIPS[vmType], Constants.VM_PES[vmType]),
+					Constants.SCHEDULING_INTERVAL, false));
+		}
+		return vms;
+	}
+/*
+
+/*
+	public static List<Vm> createVmList1(int brokerId, int vmsNumber, int shiftId) {
+		List<Vm> vms = new ArrayList<Vm>();
+		int vmType = 3;
+		for (int i = 0; i < vmsNumber; i++) {
+			vms.add(new Vm(
+					i+shiftId,
+					brokerId,
+					Constants.VM_MIPS[vmType],
+					Constants.VM_PES[vmType],
+					Constants.VM_RAM[vmType],
+					Constants.VM_BW,
+					Constants.VM_SIZE,
+					"Xen",
+					new CloudletSchedulerTimeShared()));
+		}
+		return vms;
+	}
+*/
+
+	public static List<Cloudlet> createCloudletList(int brokerId, int cloudletNumber, int ShiftId){
+		LinkedList<Cloudlet> list = new LinkedList<Cloudlet>();
+		long length = 400000000;
+		long fileSize = 300;
+		long outputSize = 300;
+		int pesNumber = 1;
+		UtilizationModel utilizationModel = new UtilizationModelFull();
+
+		Cloudlet[] cloudlet = new Cloudlet[cloudletNumber];
+
+		for(int i=0;i<cloudletNumber;i++){
+			cloudlet[i] = new Cloudlet(ShiftId + i, length, pesNumber, fileSize, outputSize, utilizationModel, utilizationModel, utilizationModel);
+			cloudlet[i].setUserId(brokerId);
+                        cloudlet[i].setVmId(i+ShiftId);
+			list.add(cloudlet[i]);
+		}
+
+		return list;
+	}
+
+        public static List<Cloudlet> createCloudletList1(int brokerId, int cloudletNumber, String inputFolderName, int shiftId) {
+                List<Cloudlet> list = new ArrayList<Cloudlet>();
+
+                long fileSize = 300;
+                long outputSize = 300;
+                UtilizationModel utilizationModelNull = new UtilizationModelNull();
+
+                File inputFolder = new File(inputFolderName);
+                File[] files = inputFolder.listFiles();
+
+                for (int i = 0; i < cloudletNumber; i++) {
+                        Cloudlet cloudlet = null;
+                        try {
+                                cloudlet = new Cloudlet(
+                                                i+shiftId,
+                                                Constants.CLOUDLET_LENGTH,
+                                                Constants.CLOUDLET_PES,
+                                                fileSize,
+                                                outputSize,
+                                                new UtilizationModelPlanetLabInMemory(
+                                                                files[i].getAbsolutePath(),
+                                                                Constants.SCHEDULING_INTERVAL), utilizationModelNull, utilizationModelNull);
+                        } catch (Exception e) {
+                                e.printStackTrace();
+                                System.exit(0);
+                        }
+                        cloudlet.setUserId(brokerId);
+                        cloudlet.setVmId(i+shiftId);
+                        list.add(cloudlet);
+                }
+
+                return list;
+        }
+
 
 	/**
 	 * Creates the host list.
@@ -777,3 +880,4 @@ public class Helper {
 	}
 
 }
+

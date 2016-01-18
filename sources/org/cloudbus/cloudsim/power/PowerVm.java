@@ -71,8 +71,10 @@ public class PowerVm extends Vm {
 			final int priority,
 			final String vmm,
 			final CloudletScheduler cloudletScheduler,
-			final double schedulingInterval) {
+			final double schedulingInterval,
+			final boolean isDeallocated) {
 		super(id, userId, mips, pesNumber, ram, bw, size, vmm, cloudletScheduler);
+		setIsDeallocated(isDeallocated);
 		setSchedulingInterval(schedulingInterval);
 	}
 
@@ -221,5 +223,4 @@ public class PowerVm extends Vm {
 	protected void setSchedulingInterval(final double schedulingInterval) {
 		this.schedulingInterval = schedulingInterval;
 	}
-
 }

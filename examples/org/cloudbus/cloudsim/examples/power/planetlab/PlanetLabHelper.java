@@ -35,7 +35,7 @@ public class PlanetLabHelper {
 	 * @return the list
 	 * @throws FileNotFoundException the file not found exception
 	 */
-	public static List<Cloudlet> createCloudletListPlanetLab(int brokerId, String inputFolderName)
+	public static List<Cloudlet> createCloudletListPlanetLab(int brokerId, int numCloudlet, String inputFolderName)
 			throws FileNotFoundException {
 		List<Cloudlet> list = new ArrayList<Cloudlet>();
 
@@ -46,7 +46,7 @@ public class PlanetLabHelper {
 		File inputFolder = new File(inputFolderName);
 		File[] files = inputFolder.listFiles();
 
-		for (int i = 0; i < files.length; i++) {
+		for (int i = 0; i < numCloudlet; i++) {
 			Cloudlet cloudlet = null;
 			try {
 				cloudlet = new Cloudlet(

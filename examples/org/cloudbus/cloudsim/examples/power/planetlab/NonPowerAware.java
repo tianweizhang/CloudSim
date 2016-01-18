@@ -9,6 +9,8 @@ import org.cloudbus.cloudsim.DatacenterBroker;
 import org.cloudbus.cloudsim.Log;
 import org.cloudbus.cloudsim.Vm;
 import org.cloudbus.cloudsim.core.CloudSim;
+import org.cloudbus.cloudsim.core.SimEntity;
+import org.cloudbus.cloudsim.core.SimEvent;
 import org.cloudbus.cloudsim.examples.power.Constants;
 import org.cloudbus.cloudsim.examples.power.Helper;
 import org.cloudbus.cloudsim.power.PowerDatacenterNonPowerAware;
@@ -57,8 +59,8 @@ public class NonPowerAware {
 			DatacenterBroker broker = Helper.createBroker();
 			int brokerId = broker.getId();
 
-			List<Cloudlet> cloudletList = PlanetLabHelper.createCloudletListPlanetLab(brokerId, inputFolder);
-			List<Vm> vmList = Helper.createVmList(brokerId, cloudletList.size());
+			List<Cloudlet> cloudletList = PlanetLabHelper.createCloudletListPlanetLab(brokerId, PlanetLabConstants.NUMBER_OF_VMS, inputFolder);
+			List<Vm> vmList = Helper.createVmList(brokerId, PlanetLabConstants.NUMBER_OF_VMS);
 			List<PowerHost> hostList = Helper.createHostList(PlanetLabConstants.NUMBER_OF_HOSTS);
 
 			PowerDatacenterNonPowerAware datacenter = (PowerDatacenterNonPowerAware) Helper.createDatacenter(
@@ -71,6 +73,10 @@ public class NonPowerAware {
 
 			broker.submitVmList(vmList);
 			broker.submitCloudletList(cloudletList);
+
+                        for (int i=1; i<100; i++) {
+                                GlobalBroker globalBroker = new GlobalBroker("GlobalBroker_"+Integer.toString(i), 2000+i*600);
+			}
 
 			CloudSim.terminateSimulation(Constants.SIMULATION_LIMIT);
 			double lastClock = CloudSim.startSimulation();
@@ -96,5 +102,50 @@ public class NonPowerAware {
 
 		Log.printLine("Finished " + experimentName);
 	}
+        public static class GlobalBroker extends SimEntity {
+
+                private static final int CREATE_BROKER = 0;
+                private List<Vm> vmList;
+                private List<Cloudlet> cloudletList;
+                private DatacenterBroker broker;
+                private int shift;
+                public GlobalBroker(String _name, int _shift) {
+                        super(_name);
+                        this.shift = _shift;
+                }
+
+                @Override
+                public void processEvent(SimEvent ev) {
+                        switch (ev.getTag()) {
+                        case CREATE_BROKER:
+
+                                try {
+                                        broker = new DatacenterBroker(super.getName());
+                                } catch (Exception e) {
+                                        e.printStackTrace();
+                                }
+
+                                vmList = Helper.createVmList1(broker.getId(), 10, shift);
+                                cloudletList = Helper.createCloudletList1(broker.getId(), 10, "/home/tianweiz/CloudSim/examples/workload/planetlab/attacker", shift);
+                                broker.submitVmList(vmList);
+                                broker.submitCloudletList(cloudletList);
+
+
+                                CloudSim.resumeSimulation();
+
+                                break;
+
+                        default:
+                                break;
+                        }
+                }
+                @Override
+                public void startEntity() {
+                        schedule(getId(), shift, CREATE_BROKER);
+                }
+                @Override
+                public void shutdownEntity() {
+                }
+        }
 
 }
